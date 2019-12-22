@@ -22,7 +22,13 @@ var telemetry_raw : String
 var telemetry : Dictionary
 var command_sended := false
 
-func _ready() -> void:
+func _process(delta: float) -> void:
+    if !command_sended:
+        return
+    process_ctrl()
+    process_telemetry()
+
+func start() -> void:
     init_ctrl_socket()
     init_tele_socket()
     if keep_active > 0:
@@ -32,12 +38,7 @@ func _ready() -> void:
         timer.connect("timeout", self, "_on_timer_timeout")
         add_child(timer)
         timer.start(keep_active)
-
-func _process(delta: float) -> void:
-    if !command_sended:
-        return
-    process_ctrl()
-    process_telemetry()
+    command(true)
     
 func _on_timer_timeout() -> void:
     speedQ()
